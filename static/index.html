@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"/>
+</head>
+
+<body>
+<div id="app">
+    <v-app>
+        <v-main>
+            <v-app-bar app color="white" elevate-on-scroll class="px-16">
+
+                <v-toolbar-title><strong>FREE</strong>Bin</v-toolbar-title>
+
+                <v-spacer></v-spacer>
+
+                v 1.0.0
+
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+
+                        <v-btn v-bind="attrs" v-on="on" icon>
+                            <v-icon>mdi-code-tags</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>View Source</span>
+                </v-tooltip>
+
+
+            </v-app-bar>
+            <v-row class="justify-center">
+                <v-col cols=6>
+                    <v-row no-gutters class="justify-center">
+                        <v-col class="d-flex justify-center ">
+                            <v-btn @click="selection=1" :color='(selection == 1) ? "deep-purple accent-4" : "light"'
+                                   text>
+                                upload
+                            </v-btn>
+                        </v-col>
+                        <v-col class="d-flex justify-center">
+                            <v-btn @click="selection=2" :color='(selection == 2) ? "deep-purple accent-4" : "light"'
+                                   text>
+                                Paste
+                            </v-btn>
+                        </v-col>
+                        <v-col class="d-flex justify-center">
+                            <v-btn @click="selection=3" :color='(selection == 3) ? "deep-purple accent-4" : "light"'
+                                   text> shorten
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-col>
+            </v-row>
+            <v-dialog
+                    v-model="dialog"
+                    max-width="290"
+            >
+                <v-card>
+                    <v-card-title class="headline text-break">
+                        Upload Successful !
+                    </v-card-title>
+                    <v-card-text>Here is your link : <strong>{{ shortLink }}</strong>
+                    </v-card-text>
+                    <v-card-content>
+                        <input type="text" v-model="clipboardValue" id="myInput" hidden>
+                    </v-card-content>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                                color="deep-purple accent-4"
+                                text
+                                @click="dialog = false"
+                        >
+                            Dismiss
+                        </v-btn>
+                        <v-btn
+                                color="deep-purple accent-4"
+                                text
+                                @click="copyText"
+
+
+                        >
+                            <div class="" v-if="copied">Copied !</div>
+                            <div class="" v-else>Copy</div>
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-container class="mt-16" v-if="selection==1">
+
+                <v-row class="justify-center">
+                    <v-col cols="5">
+                        <v-file-input v-model="file" color="deep-purple accent-4" dense label=""
+                                      placeholder="Select your files" prepend-icon="mdi-paperclip" outlined
+                                      :show-size="1000">
+                            <template v-slot:selection="{ index, text }">
+                                <v-chip v-if="index < 2" color="deep-purple accent-4" dark label small>
+                                    {{ text }}
+                                </v-chip>
+
+                                <span v-else-if="index === 2" class="overline grey--text text--darken-3 mx-2">
+                    +{{ files.length - 2 }} File(s)
+                  </span>
+                            </template>
+                        </v-file-input>
+
+                    </v-col>
+                    <v-col cols="1">
+                        <v-btn @click="uploadFile()" depressed>
+                            <v-icon>mdi-upload</v-icon>
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-container>
+            <v-container class="mt-16" v-if="selection==2">
+
+                <v-row class="justify-center">
+                    <v-col cols="5" class="">
+                        <v-textarea
+                                solo
+                                name="input-7-4"
+                                label="Please enter your paste data here."
+                                v-model="paste_data"
+                        ></v-textarea>
+                    </v-col>
+                    <v-col cols="1" class="">
+                        <v-btn @click="uploadPasteData()" depressed>
+                            <v-icon>mdi-upload</v-icon>
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-container>
+            <v-container class="mt-16" v-if="selection==3">
+
+                <v-row class="justify-center">
+                    <v-col cols="5" class="">
+                        <v-text-field
+                                solo
+                                name="input-7-4"
+                                label="Enter url to shorten"
+                                v-model="long_url"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="1" class="">
+                        <v-btn @click="createShortLink()" depressed large>
+                            <v-icon>mdi-check</v-icon>
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-main>
+
+    </v-app>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+<script>
+    var app = new Vue({
+        el: "#app",
+        vuetify: new Vuetify(),
+        data: () => ({
+            file: null,
+            selection: 1,
+            dialog: false,
+            shortLink: "",
+            message: "",
+            currentUrl: "",
+            copied: false,
+            paste_data: "",
+            clipboardValue: "",
+            long_url: ""
+
+        }),
+        created: function () {
+            this.currentUrl = window.location;
+
+        },
+        methods: {
+            createShortLink: function () {
+                fetch("/link", {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    redirect: 'follow',
+                    referrerPolicy: 'no-referrer',
+                    body: JSON.stringify({
+                        "long_url": this.long_url,
+                    })
+                }).then(r => r.json())
+                    .then(data => {
+                        console.log(data);
+                        this.shortLink = this.currentUrl + data.url;
+                        this.dialog = true;
+                        this.clipboardValue = this.shortLink;
+                    });
+
+            },
+            uploadPasteData: function () {
+                fetch("/paste", {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    redirect: 'follow',
+                    referrerPolicy: 'no-referrer',
+                    body: JSON.stringify({
+                        "paste_data": this.paste_data,
+                        "password": null
+                    })
+                }).then(r => r.json())
+                    .then(data => {
+                        console.log(data);
+                        this.shortLink = this.currentUrl + data.url;
+                        this.dialog = true;
+                        this.clipboardValue = this.shortLink;
+                    });
+
+            },
+            uploadFile: function () {
+                if (!this.file) {
+                    return
+                }
+                const formData = new FormData();
+
+                formData.append("file", this.file)
+
+                const response = fetch("/upload", {
+                    method: 'POST',
+                    body: formData
+                }).then(r => r.json())
+                    .then(data => {
+                        console.log(data);
+                        this.shortLink = this.currentUrl + data.url;
+                        this.dialog = true;
+                        this.clipboardValue = this.shortLink;
+
+                    });
+            },
+            copyText() {
+                var copyText = document.getElementById("myInput");
+
+                copyText.select();
+
+                document.execCommand('copy');
+            }
+
+
+        }
+    })
+</script>
+</body>
+
+</html>
