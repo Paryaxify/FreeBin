@@ -2,7 +2,7 @@
 
 FROM golang:1.18-alpine
 RUN apk --no-cache add make git gcc libtool musl-dev ca-certificates dumb-init
-WORKDIR /app
+WORKDIR /FreeBin/
 
 COPY go.mod ./
 COPY go.sum ./
