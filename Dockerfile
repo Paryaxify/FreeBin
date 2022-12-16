@@ -6,8 +6,8 @@ RUN mkdir /app
 WORKDIR /app
 ADD . /app
 
-RUN go build .
+RUN go build -o main .
 
 EXPOSE 8080
 
-CMD [ "fossbin" ]
+CMD [ "/app/main" ]
