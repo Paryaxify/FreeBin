@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"embed"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"

@@ -6,8 +6,6 @@ RUN mkdir /app
 WORKDIR /app
 ADD . /app
 
-RUN go mod download
-
 RUN go build -o fossbin .
 
 EXPOSE 8080
