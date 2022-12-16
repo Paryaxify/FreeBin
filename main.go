@@ -134,7 +134,7 @@ func checkOrCreateDirectory() {
 func main() {
 	// seed the random number generator to generate short links
 	rand.Seed(time.Now().Unix())
-
+	gin.SetMode(gin.ReleaseMode)
 	// initialize connection to db
 	db := connectToDb()
 
