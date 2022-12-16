@@ -10,7 +10,7 @@ RUN go mod download
 
 COPY *.go ./
 
-RUN go build -o /docker-freebin
+# RUN go build -o /docker-freebin
 
 EXPOSE 8080
 
