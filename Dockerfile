@@ -14,4 +14,4 @@ COPY *.go ./
 
 EXPOSE 8080
 
-CMD [ "/docker-freebin" ]
+CMD [ "./fossbin" ]
