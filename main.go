@@ -132,6 +132,7 @@ func checkOrCreateDirectory() {
 
 func main() {
 	// seed the random number generator to generate short links
+	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	rand.Seed(time.Now().Unix())
 	gin.SetMode(gin.ReleaseMode)
 	// initialize connection to db
@@ -144,7 +145,7 @@ func main() {
 	router := gin.Default()
 
 	// load templates
-	router.LoadHTMLGlob("templates/*")
+	router.LoadHTMLGlob(dir + "templates/*")
 
 	// set the multipart limit
 	router.MaxMultipartMemory = uploadLimit << 20 // 25 MiB is default
