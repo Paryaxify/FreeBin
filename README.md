@@ -12,7 +12,7 @@ It supports all binary files like Images and PDFs. It also works as a *pastebin*
 
 ## Live Link
 
-[freebin.prxfy.me](https://freebin.prxfy.me)
+[freebin.prxfy.dev](https://freebin.prxfy.dev)
 
 ## Screenshots
 
